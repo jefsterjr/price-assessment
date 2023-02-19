@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.capitole.model.dto.FilterDTO;
 import org.capitole.model.dto.PriceDTO;
-import org.capitole.model.entity.Price;
 import org.capitole.service.PriceService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
