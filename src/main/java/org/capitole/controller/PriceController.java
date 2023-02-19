@@ -1,6 +1,7 @@
 package org.capitole.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.capitole.model.dto.FilterDTO;
 import org.capitole.model.dto.PriceDTO;
@@ -17,13 +18,13 @@ import java.util.List;
 @RequestMapping("/")
 @Validated
 @RequiredArgsConstructor
-public class PricesController {
+public class PriceController {
 
     private final PriceService priceService;
 
     @GetMapping(path = "/price", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Get prices by filters")
-    public List<PriceDTO> productPrice(FilterDTO filter) {
+    public List<PriceDTO> productPrice(@Valid FilterDTO filter) {
         return priceService.getPrices(filter);
     }
 }
