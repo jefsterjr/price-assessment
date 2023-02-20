@@ -48,6 +48,7 @@ public class PriceService {
                 log.debug("Adding product id filter, {}", filter.productId());
             }
             query.orderBy(criteriaBuilder.asc(root.get("priority")));
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

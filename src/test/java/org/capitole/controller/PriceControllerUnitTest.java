@@ -16,8 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class PriceControllerUnitTest {
@@ -55,7 +53,8 @@ public class PriceControllerUnitTest {
     void getPricesWithEmptyReturn() {
         Mockito.when(service.getPrices(ArgumentMatchers.any(FilterDTO.class)))
                 .thenThrow(PriceNotFoundException.class);
-        PriceDTO result = controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
-        Assertions.assertNull(result);
+        Assertions.assertThrows(PriceNotFoundException.class, () -> {
+            controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+        });
     }
 }
