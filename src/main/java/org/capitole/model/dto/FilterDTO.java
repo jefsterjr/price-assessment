@@ -14,6 +14,6 @@ public record FilterDTO(
         Integer brandId,
 
         @PastOrPresent(message = "Date should be on past or the current date")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime date) {
 }

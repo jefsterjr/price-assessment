@@ -3,6 +3,7 @@ package org.capitole.controller;
 import org.capitole.model.dto.FilterDTO;
 import org.capitole.model.dto.PriceDTO;
 import org.capitole.service.PriceService;
+import org.capitole.util.exception.PriceNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,26 +35,27 @@ public class PriceControllerUnitTest {
     @Test
     void getPricesWithAllParameters() {
         Mockito.when(service.getPrices(ArgumentMatchers.any(FilterDTO.class)))
-                .thenReturn(Collections.singletonList(new PriceDTO(1, LocalDateTime.parse("2020-06-10T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                        LocalDateTime.parse("2020-12-31T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME), 1, 1, 1, BigDecimal.valueOf(35), "EUR")));
-        List<PriceDTO> resultList = controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
-        Assertions.assertEquals(resultList.size(), 1);
+                .thenReturn(new PriceDTO(1, LocalDateTime.parse("2020-06-10T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        LocalDateTime.parse("2020-12-31T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME), 1, 1, 1, BigDecimal.valueOf(35), "EUR"));
+        PriceDTO result = controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+        Assertions.assertEquals(result.price(), BigDecimal.valueOf(35));
     }
 
     @Test
     void getPricesWithNoParameters() {
         Mockito.when(service.getPrices(ArgumentMatchers.any(FilterDTO.class)))
-                .thenReturn(Collections.singletonList(new PriceDTO(1, LocalDateTime.parse("2020-06-10T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                        LocalDateTime.parse("2020-12-31T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME), 1, 1, 1, BigDecimal.valueOf(35), "EUR")));
-        List<PriceDTO> resultList = controller.productPrice(new FilterDTO(null, null, null));
-        Assertions.assertEquals(resultList.size(), 1);
+                .thenReturn(new PriceDTO(1, LocalDateTime.parse("2020-06-10T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        LocalDateTime.parse("2020-12-31T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        1, 1, 1, BigDecimal.valueOf(35), "EUR"));
+        PriceDTO result = controller.productPrice(new FilterDTO(null, null, null));
+        Assertions.assertEquals(result.price(), BigDecimal.valueOf(35));
     }
 
     @Test
     void getPricesWithEmptyReturn() {
         Mockito.when(service.getPrices(ArgumentMatchers.any(FilterDTO.class)))
-                .thenReturn(Collections.emptyList());
-        List<PriceDTO> resultList = controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
-        Assertions.assertEquals(resultList.size(), 0);
+                .thenThrow(PriceNotFoundException.class);
+        PriceDTO result = controller.productPrice(new FilterDTO(1, 1, LocalDateTime.parse("2020-06-14T10:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+        Assertions.assertNull(result);
     }
 }

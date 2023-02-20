@@ -24,7 +24,7 @@ public class PriceController {
 
     @GetMapping(path = "/price", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Get prices by filters")
-    public List<PriceDTO> productPrice(@Valid FilterDTO filter) {
+    public PriceDTO productPrice(@Valid FilterDTO filter) {
         return priceService.getPrices(filter);
     }
 }

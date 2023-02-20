@@ -4,6 +4,7 @@ import org.capitole.model.dto.FilterDTO;
 import org.capitole.model.dto.PriceDTO;
 import org.capitole.model.entity.Price;
 import org.capitole.model.repository.PriceRepository;
+import org.capitole.util.exception.PriceNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class PriceServiceUnitTest {
@@ -40,36 +40,37 @@ public class PriceServiceUnitTest {
     @Test
     void getPricesWithOnlyBrandId() {
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
-        List<PriceDTO> prices = service.getPrices(new FilterDTO(null, 1, null));
-        Assertions.assertEquals(new PriceDTO(price), prices.get(0));
+        PriceDTO priceDTO = service.getPrices(new FilterDTO(null, 1, null));
+        Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithOnlyProductId() {
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
-        List<PriceDTO> prices = service.getPrices(new FilterDTO(1, null, null));
-        Assertions.assertEquals(new PriceDTO(price), prices.get(0));
+        PriceDTO priceDTO = service.getPrices(new FilterDTO(1, null, null));
+        Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
+
     @Test
     void getPricesWithOnlyDate() {
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
-        List<PriceDTO> prices = service.getPrices(new FilterDTO(null, null, LocalDateTime.parse("2020-06-10T00:00:00")));
-        Assertions.assertEquals(new PriceDTO(price), prices.get(0));
+        PriceDTO priceDTO = service.getPrices(new FilterDTO(null, null, LocalDateTime.parse("2020-06-10T00:00:00")));
+        Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithNoParameter() {
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
-        List<PriceDTO> prices = service.getPrices(new FilterDTO(null, null, null));
-        Assertions.assertEquals(new PriceDTO(price), prices.get(0));
+        PriceDTO priceDTO = service.getPrices(new FilterDTO(null, null, null));
+        Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
-
 
     @Test
     void getPricesWithNoResult() {
         Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.emptyList());
-        List<PriceDTO> prices = service.getPrices(new FilterDTO(null, null, null));
-        Assertions.assertTrue(prices.isEmpty());
+        Assertions.assertThrows(PriceNotFoundException.class, () -> {
+            service.getPrices(new FilterDTO(null, null, null));
+        });
     }
 
     private void createPrice() {

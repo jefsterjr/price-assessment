@@ -11,7 +11,12 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BindException.class)
-    public ErrorMessage resourceNotFoundException(BindException exception) {
+    public ErrorMessage BindException(BindException exception) {
         return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), exception.getFieldError().getDefaultMessage());
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = PriceNotFoundException.class)
+    public ErrorMessage PriceNotFoundException(PriceNotFoundException exception) {
+        return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 }
