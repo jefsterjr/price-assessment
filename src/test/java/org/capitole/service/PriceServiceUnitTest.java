@@ -13,6 +13,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -39,35 +42,35 @@ public class PriceServiceUnitTest {
 
     @Test
     void getPricesWithOnlyBrandId() {
-        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
+        mockFindAll();
         PriceDTO priceDTO = service.getPrices(new FilterDTO(null, 1, null));
         Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithOnlyProductId() {
-        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
+        mockFindAll();
         PriceDTO priceDTO = service.getPrices(new FilterDTO(1, null, null));
         Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithOnlyDate() {
-        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
+        mockFindAll();
         PriceDTO priceDTO = service.getPrices(new FilterDTO(null, null, LocalDateTime.parse("2020-06-10T00:00:00")));
         Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithNoParameter() {
-        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.singletonList(price));
+        mockFindAll();
         PriceDTO priceDTO = service.getPrices(new FilterDTO(null, null, null));
         Assertions.assertEquals(new PriceDTO(price), priceDTO);
     }
 
     @Test
     void getPricesWithNoResult() {
-        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class))).thenReturn(Collections.emptyList());
+        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.any(Pageable.class))).thenReturn(Page.empty());
         Assertions.assertThrows(PriceNotFoundException.class, () -> {
             service.getPrices(new FilterDTO(null, null, null));
         });
@@ -76,5 +79,10 @@ public class PriceServiceUnitTest {
     private void createPrice() {
         price = new Price(1L, 1, LocalDateTime.parse("2020-06-10T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 LocalDateTime.parse("2020-12-31T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME), 1, 1, 1, BigDecimal.valueOf(35), "EUR");
+    }
+
+    private void mockFindAll() {
+        Mockito.when(repository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(Collections.singletonList(price)));
     }
 }

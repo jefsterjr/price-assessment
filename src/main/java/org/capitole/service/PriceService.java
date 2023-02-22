@@ -8,6 +8,8 @@ import org.capitole.model.dto.PriceDTO;
 import org.capitole.model.entity.Price;
 import org.capitole.model.repository.PriceRepository;
 import org.capitole.util.exception.PriceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +25,11 @@ public class PriceService {
 
     public PriceDTO getPrices(FilterDTO filter) {
         log.info("Getting prices using filters: {}", filter);
-        List<Price> prices = priceRepository.findAll(getSpecification(filter));
-        if (prices.isEmpty()) {
+        Page<Price> pricesPage = priceRepository.findAll(getSpecification(filter), Pageable.ofSize(1));
+        if (pricesPage.isEmpty() || pricesPage.stream().findFirst().isEmpty()) {
             throw new PriceNotFoundException();
         }
-        return new PriceDTO(prices.get(0));
+        return new PriceDTO(pricesPage.stream().findFirst().get());
     }
 
     private Specification<Price> getSpecification(FilterDTO filter) {
